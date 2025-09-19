@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
+          cache-dependency-path: player-app/package-lock.json   # 👈 point to player-app
       - name: Install & Build (player-app)
         working-directory: player-app
         run: |
