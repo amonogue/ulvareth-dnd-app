@@ -1,0 +1,29 @@
+name: Build both apps
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - name: Build player-app
+        working-directory: player-app
+        run: |
+          npm ci
+          npm run build
+      - name: Build dm-app
+        working-directory: dm-app
+        run: |
+          npm ci
+          npm run build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ulvareth-build
+          path: |
+            player-app/dist
+            dm-app/dist
