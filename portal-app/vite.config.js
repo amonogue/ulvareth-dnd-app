@@ -3,6 +3,6 @@ import react from "@vitejs/plugin-react";
 import tailwind from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: "/ulvareth-dnd-app/",   // <- REQUIRED for GitHub Pages
+  base: "/ulvareth-dnd-app/",   // <-- repo name
   plugins: [react(), tailwind()],
 });
