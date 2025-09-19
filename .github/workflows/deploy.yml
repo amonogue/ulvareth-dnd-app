@@ -1,27 +1,30 @@
-name: Build & Deploy (Player + GM)
+name: Build & Deploy (Player + GM) to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/quiz-mobile-share ]
+  pull_request:
   workflow_dispatch:
+
+# Only one deploy at a time
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      -name: Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -30,36 +33,54 @@ jobs:
             player-app/package-lock.json
             dm-app/package-lock.json
 
-      # Build PLAYER app
-      - name: Install (player)
-        run: npm ci
+      # --- PLAYER ---
+      - name: Install (player-app)
         working-directory: player-app
-
-      - name: Build (player)
-        run: npm run build
-        working-directory: player-app
-
-      # Build GM app
-      - name: Install (gm)
         run: npm ci
-        working-directory: dm-app
 
-      - name: Build (gm)
+      - name: Build (player-app)
+        working-directory: player-app
+        env:
+          # Uncomment & set if your Vite base is needed for Pages paths (e.g. /ulvareth-dnd-app/)
+          # VITE_BASE: /ulvareth-dnd-app/
+          NODE_OPTIONS: --max-old-space-size=4096
         run: npm run build
-        working-directory: dm-app
 
-      # Assemble a single site with subfolders
-      - name: Assemble site
+      # --- GM / DM ADMIN ---
+      - name: Install (dm-app)
+        working-directory: dm-app
+        run: npm ci
+
+      - name: Build (dm-app)
+        working-directory: dm-app
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run build
+
+      # --- Assemble Pages artifact ---
+      - name: Prepare site folder
         run: |
-          mkdir -p site/player site/gm
-          cp -r player-app/dist/* site/player/
-          cp -r dm-app/dist/* site/gm/
-          echo "Site assembled:"
-          ls -la site
-          ls -la site/player
-          ls -la site/gm
+          rm -rf site
+          mkdir -p site/player
+          mkdir -p site/gm
+          cp -R player-app/dist/* site/player/
+          cp -R dm-app/dist/* site/gm/
 
-      - name: Upload artifact
+      # If you want a root landing page that links to both apps, uncomment:
+      # - name: Add root index.html
+      #   run: |
+      #     cat > site/index.html <<'HTML'
+      #     <!doctype html>
+      #     <meta charset="utf-8">
+      #     <meta name="viewport" content="width=device-width,initial-scale=1">
+      #     <title>Ulvareth Apps</title>
+      #     <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:2rem}a{display:block;margin:.5rem 0;font-size:1.125rem}</style>
+      #     <h1>Ulvareth</h1>
+      #     <a href="./player/">Player Quiz</a>
+      #     <a href="./gm/">GM / DM Admin</a>
+      #     HTML
+
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
@@ -71,6 +92,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
