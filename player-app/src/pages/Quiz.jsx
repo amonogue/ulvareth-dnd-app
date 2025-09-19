@@ -5,7 +5,7 @@ import React, { useMemo, useState, useEffect } from "react";
 ---------- */
 function useIsMobile() {
   const get = () => window.matchMedia("(max-width: 640px)").matches; // Tailwind 'sm'
-  const [isMobile, setIsMobile] = useState(get);
+  const [isMobile, setIsMobile] = useState(get()); // ✅ call get()
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 640px)");
     const handler = (e) => setIsMobile(e.matches);
@@ -398,7 +398,7 @@ export default function UlvarethQuizApp() {
     } catch (_) {}
   }
 
-  // Send to DM: copy a URL the DM app (local dev) can open to import
+  // Send to DM: copy a URL the DM app can open to import
   function sendToDM() {
     const payload = {
       ts: new Date().toISOString(),
@@ -415,14 +415,14 @@ export default function UlvarethQuizApp() {
     };
     const data = encodePayload(payload);
 
-    // Local DM app during development:
-    const dmUrl = `http://localhost:5174/#/import?data=${data}`;
-
-    // If you later host the DM app on Pages, swap to your DM Pages URL:
-    // const dmUrl = `https://amonogue.github.io/ulvareth-dnd-app-dm/#/import?data=${data}`;
+    // Use GitHub Pages URL in prod, localhost in dev
+    const isPages = typeof window !== "undefined" && /github\.io$/.test(window.location.host);
+    const dmUrl = isPages
+      ? `https://amonogue.github.io/ulvareth-dnd-app/gm/#/import?data=${data}`
+      : `http://localhost:5174/#/import?data=${data}`;
 
     navigator.clipboard?.writeText(dmUrl);
-    alert("Link copied! Open the DM app and paste in your browser.");
+    alert("Link copied! Open the GM/Admin app and paste in your browser.");
   }
 
   // Sidebar panels (both pinned)
