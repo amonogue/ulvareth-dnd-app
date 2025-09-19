@@ -1,3 +1,7 @@
+/* dm-app/src/index.css */
+@import "tailwindcss";
+
+/* your custom tokens + helpers */
 :root{
   --paper:#E6E1D3;      /* pearl */
   --ink:#2F2F2F;        /* coal */
