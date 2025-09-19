@@ -14,10 +14,11 @@ const preset = {
       borderRadius: { xl2: "1rem" },
       boxShadow: { card: "0 6px 18px rgba(0,0,0,0.12)" },
       fontFamily: {
-        ui: ['Segoe UI', 'Inter', 'system-ui', 'sans-serif'],
-        mono: ['Consolas', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        ui: ['Segoe UI','Inter','system-ui','sans-serif'],
+        mono: ['Consolas','ui-monospace','SFMono-Regular','monospace'],
       },
     },
   },
 }
 export default preset
+

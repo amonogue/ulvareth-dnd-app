@@ -1,0 +1,19 @@
+{
+  "name": "ulvareth-dnd-app",
+  "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev:player": "npm run dev --prefix player-app -- --port 5173",
+    "dev:dm": "npm run dev --prefix dm-app -- --port 5174",
+    "dev:all": "concurrently \"npm:dev:player\" \"npm:dev:dm\"",
+    "build:player": "npm run build --prefix player-app",
+    "build:dm": "npm run build --prefix dm-app",
+    "build:all": "npm run build:player && npm run build:dm",
+    "preview:player": "npm run preview --prefix player-app -- --port 4173",
+    "preview:dm": "npm run preview --prefix dm-app -- --port 4174"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
