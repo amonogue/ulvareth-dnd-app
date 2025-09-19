@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@import "tailwindcss";@import "tailwindcss";
+@import "@tailwindcss/forms"; /* optional but nice */
+
 
 /* Ulvareth theme via Tailwind v4 @theme */
 @theme {
