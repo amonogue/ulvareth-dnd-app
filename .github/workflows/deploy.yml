@@ -1,0 +1,73 @@
+name: Build & Deploy (Player + GM)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Build PLAYER app
+      - name: Install (player)
+        run: npm ci
+        working-directory: player-app
+
+      - name: Build (player)
+        run: npm run build
+        working-directory: player-app
+
+      # Build GM app
+      - name: Install (gm)
+        run: npm ci
+        working-directory: dm-app
+
+      - name: Build (gm)
+        run: npm run build
+        working-directory: dm-app
+
+      # Assemble a single site with subfolders
+      - name: Assemble site
+        run: |
+          mkdir -p site/player site/gm
+          cp -r player-app/dist/* site/player/
+          cp -r dm-app/dist/* site/gm/
+          echo "Site assembled:"
+          ls -la site
+          ls -la site/player
+          ls -la site/gm
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
