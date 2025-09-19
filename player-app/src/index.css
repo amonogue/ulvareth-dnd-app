@@ -1,8 +1,2 @@
 @import "tailwindcss";
-
-/* Ulvareth defaults */
-:root { color-scheme: light dark; }
-body { @apply min-h-screen bg-parchment text-ink; }
-a { @apply text-aether hover:underline; }
-h1 { @apply text-3xl font-bold mb-3 text-iron; }
-nav a { @apply mr-4; }
+/* no @apply yet, keep it simple */

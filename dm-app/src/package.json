@@ -1,0 +1,9 @@
+{
+  "name": "ulvareth-dnd-app",
+  "private": true,
+  "scripts": {
+    "dev:player": "cd player-app && npm run dev",
+    "dev:dm": "cd dm-app && npm run dev",
+    "dev:all": "concurrently \"npm run dev:player\" \"npm run dev:dm\""
+  }
+}
